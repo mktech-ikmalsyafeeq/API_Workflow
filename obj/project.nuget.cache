@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "PGgDiDEqS/8=",
+  "success": true,
+  "projectFilePath": "D:\\Repositories\\ManufacturingExecutionSystem\\API_Workflow\\API_Workflow\\API_Workflow.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\NurIkmalSyafiq\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.11\\microsoft.aspnetcore.openapi.9.0.11.nupkg.sha512",
+    "C:\\Users\\NurIkmalSyafiq\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
+    "C:\\Users\\NurIkmalSyafiq\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.22.1\\microsoft.visualstudio.azure.containers.tools.targets.1.22.1.nupkg.sha512"
+  ],
+  "logs": []
+}
