@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 [ApiController]
 [Route("api/workflow")]
@@ -24,27 +25,47 @@ public class WorkflowController : ControllerBase
 
             if (value == "mes" && branch == "main")
             {
-                string commands = @"
-                    set -e
-                    cd /home/dev/github_repo/mes-ui && \
-                    git pull origin main && \
-                    docker build -t mes-ui . && \
-                    docker stop mes-ui || true && \
-                    docker rm -f mes-ui || true && \
-                    docker run -d -p 4200:80 --name mes-ui mes-ui
-                ";
+                // Full paths to commands
+                string gitPath = "/usr/bin/git";
+                string dockerPath = "/usr/bin/docker";
 
-                string commands2 = @"
-                    cd /home/dev/github_repo/mes-api && \
-                    git pull origin main && \
-                    docker build -t mes-api . && \
-                    docker stop mes-api || true && \
-                    docker rm -f mes-api || true && \
-                    docker run -d -p 5000:5000 --name mes-api mes-api
-                ";
+                // Command for mes-ui
+                string commandsUI = $@"
+            set -e
+            if [ -d /home/dev/github_repo/mes-ui ]; then
+                cd /home/dev/github_repo/mes-ui
+                {gitPath} pull origin main
+                {dockerPath} build -t mes-ui .
+                {dockerPath} stop mes-ui || true
+                {dockerPath} rm -f mes-ui || true
+                {dockerPath} run -d -p 4200:80 --name mes-ui mes-ui
+            else
+                echo 'Directory /home/dev/github_repo/mes-ui does not exist'
+                exit 1
+            fi
+        ";
 
-                RunBash(commands);
-                RunBash(commands2);
+                // Command for mes-api
+                string commandsAPI = $@"
+            set -e
+            if [ -d /home/dev/github_repo/mes-api ]; then
+                cd /home/dev/github_repo/mes-api
+                {gitPath} pull origin main
+                {dockerPath} build -t mes-api .
+                {dockerPath} stop mes-api || true
+                {dockerPath} rm -f mes-api || true
+                {dockerPath} run -d -p 5000:5000 --name mes-api mes-api
+            else
+                echo 'Directory /home/dev/github_repo/mes-api does not exist'
+                exit 1
+            fi
+        ";
+
+                // Run mes-ui
+                RunBash(commandsUI, "mes-ui");
+
+                // Run mes-api
+                RunBash(commandsAPI, "mes-api");
 
                 return Ok("Docker update triggered successfully");
             }
@@ -57,34 +78,29 @@ public class WorkflowController : ControllerBase
         }
     }
 
-    private static void RunBash(string commands)
+    private static void RunBash(string commands, string name)
     {
-        var process = new Process
+        var psi = new ProcessStartInfo
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = "/usr/bin/bash",
-                Arguments = "-c \"" + commands.Replace("\"", "\\\"") + "\"",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
+            FileName = "/bin/bash",
+            Arguments = $"-c \"{commands}\"",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
 
-        process.Start();
-
-        string stdout = process.StandardOutput.ReadToEnd();
-        string stderr = process.StandardError.ReadToEnd();
-
+        using var process = Process.Start(psi);
+        string output = process.StandardOutput.ReadToEnd();
+        string error = process.StandardError.ReadToEnd();
         process.WaitForExit();
 
-        Console.WriteLine(stdout);
-
-        if (process.ExitCode != 0)
+        Console.WriteLine($"--- {name} OUTPUT ---");
+        Console.WriteLine(output);
+        if (!string.IsNullOrWhiteSpace(error))
         {
-            Console.Error.WriteLine(stderr);
-            throw new Exception($"Deployment failed, The error is {stderr}");
+            throw new Exception($"Deployment failed, The error is {error}");
         }
+
     }
 }
