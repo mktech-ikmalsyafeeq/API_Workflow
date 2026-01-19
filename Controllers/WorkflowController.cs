@@ -25,8 +25,7 @@ public class WorkflowController : ControllerBase
             if (value == "mes" && branch == "main")
             {
                 string commands = @"
-                    chmod o+rx /home/dev && \
-                    chmod -R o+rx /home/dev/github_repo && \
+                    set -e
                     cd /home/dev/github_repo/mes-ui && \
                     git pull origin main && \
                     docker build -t mes-ui . && \
@@ -36,8 +35,6 @@ public class WorkflowController : ControllerBase
                 ";
 
                 string commands2 = @"
-                    chmod o+rx /home/dev && \
-                    chmod -R o+rx /home/dev/github_repo && \
                     cd /home/dev/github_repo/mes-api && \
                     git pull origin main && \
                     docker build -t mes-api . && \
