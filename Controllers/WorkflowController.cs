@@ -63,7 +63,7 @@ public class WorkflowController : ControllerBase
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "/bin/bash",
+                FileName = "/usr/bin/bash",
                 Arguments = "-c \"" + commands.Replace("\"", "\\\"") + "\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
