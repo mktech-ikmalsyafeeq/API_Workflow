@@ -36,8 +36,8 @@ public class WorkflowController : ControllerBase
                 cd /home/dev/github_repo/mes-ui
                 {gitPath} pull origin main
                 {dockerPath} build -t mes-ui .
-                {dockerPath} stop mes-ui || true
-                {dockerPath} rm -f mes-ui || true
+                {dockerPath} stop mes-ui
+                {dockerPath} rm -f mes-ui
                 {dockerPath} run -d -p 4200:80 --name mes-ui mes-ui
             else
                 echo 'Directory /home/dev/github_repo/mes-ui does not exist'
@@ -52,8 +52,8 @@ public class WorkflowController : ControllerBase
                 cd /home/dev/github_repo/mes-api
                 {gitPath} pull origin main
                 {dockerPath} build -t mes-api .
-                {dockerPath} stop mes-api || true
-                {dockerPath} rm -f mes-api || true
+                {dockerPath} stop mes-api
+                {dockerPath} rm -f mes-api
                 {dockerPath} run -d -p 5000:5000 --name mes-api mes-api
             else
                 echo 'Directory /home/dev/github_repo/mes-api does not exist'
