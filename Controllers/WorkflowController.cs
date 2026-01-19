@@ -25,8 +25,7 @@ public class WorkflowController : ControllerBase
             if (value == "mes" && branch == "main")
             {
                 string commands = @"
-                    cd github_repo && \
-                    cd mes-ui && \
+                    cd /home/dev/github_repo/mes-ui && \
                     git pull origin main && \
                     docker build -t mes-ui . && \
                     docker stop mes-ui || true && \
@@ -35,8 +34,7 @@ public class WorkflowController : ControllerBase
                 ";
 
                 string commands2 = @"
-                    cd github_repo && \
-                    cd mes-api && \
+                    cd /home/dev/github_repo/mes-api && \
                     git pull origin main && \
                     docker build -t mes-api . && \
                     docker stop mes-api || true && \
@@ -85,7 +83,7 @@ public class WorkflowController : ControllerBase
         if (process.ExitCode != 0)
         {
             Console.Error.WriteLine(stderr);
-            throw new Exception($"Deployment failed, {stderr}");
+            throw new Exception($"Deployment failed, The error is {stderr}");
         }
     }
 }
