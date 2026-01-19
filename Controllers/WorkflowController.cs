@@ -85,7 +85,7 @@ public class WorkflowController : ControllerBase
         if (process.ExitCode != 0)
         {
             Console.Error.WriteLine(stderr);
-            throw new Exception("Deployment failed");
+            throw new Exception($"Deployment failed, {stderr}");
         }
     }
 }
